@@ -31,7 +31,10 @@ func natsReceiver(){
 	service.NATSinit(timestamp)
 	stantime:=service.NATSread()
 	log.Println("Бэкап NATS загружен, дата и время последнего прочтенного сообщения:",stantime.Format(time.RFC822Z))
-	sc, _ := stan.Connect("test-cluster", "go-nats-streaming-json-receiver")
+	sc, err := stan.Connect("test-cluster", "go-nats-streaming-json-receiver")
+	if err!=nil{
+		log.Fatal("NATS не загружен",err)
+	}
 	sub, _ := sc.Subscribe("orders", func(m *stan.Msg) {
 		service.NATSwrite(time.Now())
 		var order model.Order
